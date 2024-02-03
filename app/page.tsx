@@ -1,27 +1,28 @@
+"use client"
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import {useEffect,useState} from 'react';
 import { fetchCars } from "@/utils";
 import { HomeProps } from "@/types";
 import { fuels, yearsOfProduction } from "@/constants";
 import { CarCard, ShowMore, SearchBar, CustomFilter, Hero } from "@/components";
 
 export default function Home() {
-  const [allCars, setAllCars] = useState([]); 
-  const [loading, setLoading] = useState(false); 
-  const [manufacturer, setManufacturer] = useState(""); 
+  const [allCars, setAllCars] = useState([]); // Changed setallCars to setAllCars
+  const [loading, setLoading] = useState(false); // Changed setloading to setLoading
+  const [manufacturer, setManufacturer] = useState(""); // Changed setmanufacturer to setManufacturer
   const [model, setModel] = useState("");
-  const [fuel, setFuel] = useState(""); 
-  const [year, setYear] = useState("2022"); // Change to string to match filter values
-  const [limit, setLimit] = useState(10);
+  const [fuel, setFuel] = useState(""); // Changed setfuel to setFuel
+  const [year, setYear] = useState(2022); // Changed setyear to setYear
+  const [limit, setLimit] = useState(10); // Changed setlimit to setLimit
 
   const getCars = async () => {
-    setLoading(true);
+    setLoading(true); // Changed setloading to setLoading
     try {
       const result = await fetchCars({
         manufacturer: manufacturer || '',
-        year: parseInt(year) || 2022, // Parse to int since state is string
+        year: year || 2022,
         fuel: fuel || '',
-        limit: parseInt(limit) || 10, // Parse to int since state is string
+        limit: limit || 10,
         model: model || '',
       });
 
@@ -29,13 +30,16 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Changed setloading to setLoading
     }
   }
 
   useEffect(() => {
+    console.log(fuel, year, limit, manufacturer, model)
     getCars();
   }, [fuel, year, limit, manufacturer, model]);
+
+  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars;
 
   return (
     <main className='overflow-hidden'>
@@ -48,7 +52,8 @@ export default function Home() {
         </div>
 
         <div className='home__filter'>
-          <SearchBar setManufacturer={setManufacturer} setModel={setModel} />
+          <SearchBar setManufacturer={setManufacturer} 
+           setModel={setModel} />
 
           <div className='home__filter-container' >
             <CustomFilter title='fuel' options={fuels} setFilter={setFuel} />
@@ -59,8 +64,8 @@ export default function Home() {
         {allCars.length > 0 ? (
           <section>
             <div className='home__cars-wrapper'>
-              {allCars.map((car) => (
-                <CarCard key={car.id} car={car} />
+              {allCars?.map((car) => (
+                <CarCard car={car} />
               ))}
             </div>
 
@@ -85,7 +90,7 @@ export default function Home() {
         ) : (
           <div className='home__error-container'>
             <h2 className='text-black text-xl font-bold'>Oops, no results</h2>
-            <p>{allCars.message}</p>
+            <p>{allCars?.message}</p>
           </div>
         )}
       </div>
