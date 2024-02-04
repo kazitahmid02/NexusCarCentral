@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,34 +17,56 @@ const SearchButton = ({ otherClasses }: { otherClasses: string }) => (
   </button>
 );
 
-const SearchBar = ({setManufacturer,setModel}) => {
-  const [searchManufacturer, setSearchManufacturer] = useState(''); // Fixed the typo here
-  const [searchModel, setSearchModel] = useState('');
-  
+const SearchBar = () => {
+  const [manufacturer, setManuFacturer] = useState("");
+  const [model, setModel] = useState("");
 
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-    if (searchManufacturer.trim() === '' && searchModel.trim() === '') {
+
+    if (manufacturer.trim() === "" && model.trim() === "") {
       return alert("Please provide some input");
     }
-    
-    setModel(searchModel);
-    setManufacturer(searchManufacturer);
+
+    updateSearchParams(model.toLowerCase(), manufacturer.toLowerCase());
+  };
+
+  const updateSearchParams = (model: string, manufacturer: string) => {
+    // Create a new URLSearchParams object using the current URL search parameters
+    const searchParams = new URLSearchParams(window.location.search);
+
+    // Update or delete the 'model' search parameter based on the 'model' value
+    if (model) {
+      searchParams.set("model", model);
+    } else {
+      searchParams.delete("model");
+    }
+
+    // Update or delete the 'manufacturer' search parameter based on the 'manufacturer' value
+    if (manufacturer) {
+      searchParams.set("manufacturer", manufacturer);
+    } else {
+      searchParams.delete("manufacturer");
+    }
+
+    // Generate the new pathname with the updated search parameters
+    const newPathname = `${window.location.pathname}?${searchParams.toString()}`;
+
+    router.push(newPathname);
   };
 
   return (
-    <form className='searchbar' onSubmit={handleSearch}>
-      <div className='searchbar__item'>
+    <form className='searchbar z-20 mb-4' onSubmit={handleSearch}>
+      <div className='searchbar__item mb-2'>
         <SearchManufacturer
-          selected={searchManufacturer}
-          setSelected={setSearchManufacturer} // Corrected the prop name here
+          manufacturer={manufacturer}
+          setManuFacturer={setManuFacturer}
         />
         <SearchButton otherClasses='sm:hidden' />
       </div>
-      <div className='searchbar__item'>
+      <div className='searchbar__item relative z-10 mb-2'>
         <Image
           src='/model-icon.png'
           width={25}
@@ -56,9 +77,9 @@ const SearchBar = ({setManufacturer,setModel}) => {
         <input
           type='text'
           name='model'
-          value={searchModel}
-          onChange={(e) => setSearchModel(e.target.value)}
-          placeholder='Tiguan'
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          placeholder='Tiguan...'
           className='searchbar__input'
         />
         <SearchButton otherClasses='sm:hidden' />

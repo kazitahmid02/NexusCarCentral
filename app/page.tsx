@@ -1,3 +1,5 @@
+"use client"
+
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { fetchCars } from "@/utils";
@@ -6,7 +8,7 @@ import { fuels, yearsOfProduction } from "@/constants";
 import { CarCard, ShowMore, SearchBar, CustomFilter, Hero } from "@/components";
 
 export default function Home() {
-  const [allCars, setAllCars] = useState([]); 
+  const [allCars, setAllCars] = useState<any>([]); 
   const [loading, setLoading] = useState(false); 
   const [manufacturer, setManufacturer] = useState(""); 
   const [model, setModel] = useState("");
@@ -21,7 +23,7 @@ export default function Home() {
         manufacturer: manufacturer || '',
         year: parseInt(year) || 2022, // Parse to int since state is string
         fuel: fuel || '',
-        limit: parseInt(limit) || 10, // Parse to int since state is string
+        limit: parseInt(limit.toString()) || 10, // Parse to int since state is string
         model: model || '',
       });
 
@@ -59,7 +61,7 @@ export default function Home() {
         {allCars.length > 0 ? (
           <section>
             <div className='home__cars-wrapper'>
-              {allCars.map((car) => (
+              {allCars.map((car: any) => (
                 <CarCard key={car.id} car={car} />
               ))}
             </div>
